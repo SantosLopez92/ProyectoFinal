@@ -1,0 +1,13 @@
+Command: cmake -G Ninja -DPYTHON_DEPS_CHECKED=1 -DPYTHON=C:\Espressif\python_env\idf5.5_py3.11_env\Scripts\python.exe -DESP_PLATFORM=1 -DCCACHE_ENABLE=1 C:\Users\santo\practicas_micros_2026\stepper_motor
+CMake Warning (dev) at C:/Espressif/frameworks/esp-idf-v5.5.2/tools/cmake/component.cmake:492 (add_library):
+  Policy CMP0115 is not set: Source file extensions must be explicit.  Run
+  "cmake --help-policy CMP0115" for policy details.  Use the cmake_policy
+  command to set the policy and suppress this warning.
+
+  File:
+
+    C:/Users/santo/practicas_micros_2026/stepper_motor/main/main.c.c
+Call Stack (most recent call first):
+  main/CMakeLists.txt:1 (idf_component_register)
+This warning is for project developers.  Use -Wno-dev to suppress it.
+
