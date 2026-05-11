@@ -26,6 +26,17 @@ int direccion = -1;
 // Paso actual
 int paso_secuencia = 0;
 
+//Ips de los esclavos
+#define ip_ESP1 "192.168.137.246"
+#define ip_ESP2 "192.168.137.129"
+
+//Esp activo_ip
+char esp_activo_ip[20] = IP_ESP1;
+
+//Contador del sistema
+bool caja_blanca = false;
+bool adc_fail = false;
+
 // Secuencia del motor
 const uint8_t secuencia[4] = 
 {
@@ -76,10 +87,18 @@ paso_secuencial += direccion;
 
 void solicitar_lectura(void)
 {
+char url(100);
+sprintf(url, "http://%s/leer", esp_activo_ip);
+ESP_LOGI_(TAG, "solicitando lectura ADC");
+enviar_comando(url);
 }
 
 void solicitar_test_adc(void)
 {
+char url(100);
+sprintf(url, "http://%s/leer", esp_acitvo_ip);
+ESP_LOGI_(TAG, "solicitando test ADC");
+enviar_comando(url);
 }
 
 
