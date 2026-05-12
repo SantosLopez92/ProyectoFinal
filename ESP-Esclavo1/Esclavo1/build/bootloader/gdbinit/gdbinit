@@ -1,2 +1,2 @@
-source C:/Users/santo/practicas_micros_2026/adc-SantosLopez92/simpleADC/build/bootloader/gdbinit/symbols
-source C:/Users/santo/practicas_micros_2026/adc-SantosLopez92/simpleADC/build/bootloader/gdbinit/connect
+source C:/Users/areli/practicas_micros_2026/ProyectoFinal/ESP-Esclavo1/Esclavo1/build/bootloader/gdbinit/symbols
+source C:/Users/areli/practicas_micros_2026/ProyectoFinal/ESP-Esclavo1/Esclavo1/build/bootloader/gdbinit/connect

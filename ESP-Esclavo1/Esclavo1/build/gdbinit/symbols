@@ -18,8 +18,8 @@ end
 
 # Load bootloader symbols
 set confirm off
-    add-symbol-file C:/Users/santo/practicas_micros_2026/adc-SantosLopez92/simpleADC/build/bootloader/bootloader.elf
+    add-symbol-file C:/Users/areli/practicas_micros_2026/ProyectoFinal/ESP-Esclavo1/Esclavo1/build/bootloader/bootloader.elf
 set confirm on
 
 # Load application symbols
-file C:/Users/santo/practicas_micros_2026/adc-SantosLopez92/simpleADC/build/simpleADC.elf
+file C:/Users/areli/practicas_micros_2026/ProyectoFinal/ESP-Esclavo1/Esclavo1/build/esp1.elf

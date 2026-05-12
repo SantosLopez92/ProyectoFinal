@@ -22,4 +22,4 @@ set confirm off
 set confirm on
 
 # Load application symbols
-file C:/Users/santo/practicas_micros_2026/adc-SantosLopez92/simpleADC/build/bootloader/bootloader.elf
+file C:/Users/areli/practicas_micros_2026/ProyectoFinal/ESP-Esclavo1/Esclavo1/build/bootloader/bootloader.elf

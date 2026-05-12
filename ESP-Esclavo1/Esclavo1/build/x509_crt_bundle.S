@@ -1,4 +1,4 @@
-/* * Data converted from C:/Users/santo/practicas_micros_2026/adc-SantosLopez92/simpleADC/build/esp-idf/mbedtls/x509_crt_bundle
+/* * Data converted from C:/Users/areli/practicas_micros_2026/ProyectoFinal/ESP-Esclavo1/Esclavo1/build/esp-idf/mbedtls/x509_crt_bundle
  */
 .data
 #if !defined (__APPLE__) && !defined (__linux__)

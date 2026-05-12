@@ -10,18 +10,18 @@ if(NOT EXISTS "C:/Espressif/frameworks/esp-idf-v5.5.2/components/bootloader/subp
   file(MAKE_DIRECTORY "C:/Espressif/frameworks/esp-idf-v5.5.2/components/bootloader/subproject")
 endif()
 file(MAKE_DIRECTORY
-  "C:/Users/santo/practicas_micros_2026/adc-SantosLopez92/simpleADC/build/bootloader"
-  "C:/Users/santo/practicas_micros_2026/adc-SantosLopez92/simpleADC/build/bootloader-prefix"
-  "C:/Users/santo/practicas_micros_2026/adc-SantosLopez92/simpleADC/build/bootloader-prefix/tmp"
-  "C:/Users/santo/practicas_micros_2026/adc-SantosLopez92/simpleADC/build/bootloader-prefix/src/bootloader-stamp"
-  "C:/Users/santo/practicas_micros_2026/adc-SantosLopez92/simpleADC/build/bootloader-prefix/src"
-  "C:/Users/santo/practicas_micros_2026/adc-SantosLopez92/simpleADC/build/bootloader-prefix/src/bootloader-stamp"
+  "C:/Users/areli/practicas_micros_2026/ProyectoFinal/ESP-Esclavo1/Esclavo1/build/bootloader"
+  "C:/Users/areli/practicas_micros_2026/ProyectoFinal/ESP-Esclavo1/Esclavo1/build/bootloader-prefix"
+  "C:/Users/areli/practicas_micros_2026/ProyectoFinal/ESP-Esclavo1/Esclavo1/build/bootloader-prefix/tmp"
+  "C:/Users/areli/practicas_micros_2026/ProyectoFinal/ESP-Esclavo1/Esclavo1/build/bootloader-prefix/src/bootloader-stamp"
+  "C:/Users/areli/practicas_micros_2026/ProyectoFinal/ESP-Esclavo1/Esclavo1/build/bootloader-prefix/src"
+  "C:/Users/areli/practicas_micros_2026/ProyectoFinal/ESP-Esclavo1/Esclavo1/build/bootloader-prefix/src/bootloader-stamp"
 )
 
 set(configSubDirs )
 foreach(subDir IN LISTS configSubDirs)
-    file(MAKE_DIRECTORY "C:/Users/santo/practicas_micros_2026/adc-SantosLopez92/simpleADC/build/bootloader-prefix/src/bootloader-stamp/${subDir}")
+    file(MAKE_DIRECTORY "C:/Users/areli/practicas_micros_2026/ProyectoFinal/ESP-Esclavo1/Esclavo1/build/bootloader-prefix/src/bootloader-stamp/${subDir}")
 endforeach()
 if(cfgdir)
-  file(MAKE_DIRECTORY "C:/Users/santo/practicas_micros_2026/adc-SantosLopez92/simpleADC/build/bootloader-prefix/src/bootloader-stamp${cfgdir}") # cfgdir has leading slash
+  file(MAKE_DIRECTORY "C:/Users/areli/practicas_micros_2026/ProyectoFinal/ESP-Esclavo1/Esclavo1/build/bootloader-prefix/src/bootloader-stamp${cfgdir}") # cfgdir has leading slash
 endif()

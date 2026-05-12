@@ -3,8 +3,10 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "driver/adc.h"
-#include "driver_ledc.h"
+#include "driver/ledc.h"
+#include "driver/i2c.h"
 #include "driver/gpio.h"
+#include "esp_log.h"
 #include "ssd1306.h"
 #include "font8x8_basic.h"
 
@@ -31,14 +33,26 @@
 // Configuracion para boton de prueba
 #define BTN1 GPIO_NUM_12
 
+// Configuracion para I2C Heartbeat
+#define HB_SDA      GPIO_NUM_18
+#define HB_SCL      GPIO_NUM_19
+#define I2C_HB      I2C_NUM_1
+#define ESP2_ADDR   0x08
+#define RX_BUF     128
+
 // Variables OLED
-int center=3;
-char lineChar[20];
 SSD1306_t dev;
-char lastLine[20] = "";
+char line1[30];
+char line2[30];
 
 // Variable para intensidad (deteccion de color)
 float intensidad = 0;
+
+// Variable heartbeat
+int64_t last_heartbeat = 0;
+
+// Variable respaldo
+bool activo = false;
 
 // Configurar botón 
 void in_btn(void)
@@ -74,7 +88,7 @@ void pwm_timer_config(void)
 }
 
 // Configurar canal PWM
-pwm_channel_config(void)
+void pwm_channel_config(void)
 {
     ledc_channel_config_t ledc_channel = {
         .channel    = SERVO_CHANNEL,
@@ -107,11 +121,9 @@ void in_adc(void)
 // OLED
 void OLED(void)
 {
-	if(strcmp(lineChar, lastLine) != 0){
-   		ssd1306_clear_screen(&dev, false);
-    	ssd1306_display_text(&dev, center, lineChar, strlen(lineChar), false);
-    	strcpy(lastLine, lineChar);
-	}
+    ssd1306_clear_screen(&dev, false);
+    ssd1306_display_text(&dev, 1, line1, strlen(line1), false);
+    ssd1306_display_text(&dev, 3, line2, strlen(line2), false);
 }
 
 // Deteccion de colores
@@ -150,41 +162,111 @@ void leer_adc(void)
     vTaskDelay(pdMS_TO_TICKS(500));	
 }
 
+// I2C HEARTBEAT
+
+// Configurar I2C slave
+void init_i2c_slave(void)
+{
+    i2c_config_t conf = {
+        .mode = I2C_MODE_SLAVE,
+        .sda_io_num = HB_SDA,
+        .scl_io_num = HB_SCL,
+        .sda_pullup_en = GPIO_PULLUP_ENABLE,
+        .scl_pullup_en = GPIO_PULLUP_ENABLE,
+        .slave.slave_addr = ESP2_ADDR,
+        .slave.addr_10bit_en = 0
+    };
+
+    i2c_param_config(I2C_HB, &conf);
+    i2c_driver_install(I2C_HB, conf.mode, RX_BUF, 0, 0);
+}
+
+// Recibir heartbeat
+void receive_heartbeat(void)
+{
+    uint8_t data[10];
+    int len = i2c_slave_read_buffer(
+        I2C_HB,
+        data,
+        sizeof(data),
+        pdMS_TO_TICKS(50)
+    );
+
+    if(len > 0){
+        last_heartbeat = esp_timer_get_time();
+        sprintf(line1, "ESP1 OK");
+        sprintf(line2, "HEARTBEAT");
+        OLED_print();
+    }
+}
+
+// Verificar heartbeat
+void check_heartbeat(void)
+{
+    int64_t now = esp_timer_get_time();
+
+    if((now - last_heartbeat) > 3000000){
+        sprintf(line1, "ALERTA ESP1");
+        sprintf(line2, "SIN HEARTBEAT");
+        OLED_print();
+
+        // Activar respaldo
+        activo = true;
+    }
+    else{
+
+        activo = false;
+    }
+}
+
+void task_system(void *pv)
+{
+    int last_btn = 1;
+
+    while(1){
+        receive_heartbeat();
+        check_heartbeat();
+
+        // Boton de prueba
+        int current_btn = gpio_get_level(BTN1);
+        if(last_btn == 1 && current_btn == 0){
+            leer_adc();
+            vTaskDelay(pdMS_TO_TICKS(200));
+        }
+
+        last_btn = current_btn;
+        
+        // Respaldo automatico
+        if(activo){
+            leer_adc();
+        }
+        vTaskDelay(pdMS_TO_TICKS(100));
+    }
+}
 
 void app_main(void)
 {
+	// Configuracion PWM
     pwm_timer_config();
     pwm_channel_config();
 
-    // Variable para flanco de bajada BTN1
-    int last_state_adc = 1;
-
-    Posicion inicial del servo
+    // Posicion inicial del servo
     servo_move(0);
 
     // Configuracion OLED
     i2c_master_init(&dev, CONFIG_SDA_GPIO, CONFIG_SCL_GPIO, CONFIG_RESET_GPIO);
     ssd1306_init(&dev, 128, 64);
     vTaskDelay(pdMS_TO_TICKS(300));
+    
+    // Configuracion I2C heartbeat
+    init_i2c_slave();
 
-    // Inicializacion de ADC y botón
-    in_adc();
-    in_btn();
+    last_heartbeat = esp_timer_get_time();
 
-    // Bucle de lectura
-    while (1) {
-        // Boton prueba adc
-        int current_state_adc = gpio_get_level(BTN1);
+    sprintf(line1, "ESP2 BACKUP");
+    sprintf(line2, "ESPERANDO");
 
-        // Detectar flanco de bajada
-        if (last_state_adc == 1 && current_state_adc == 0)
-        {
-            leer_adc();
+    OLED_print();
 
-            // Debounce
-            vTaskDelay(pdMS_TO_TICKS(200));
-        }
-        last_state_adc = current_state_adc;
-        vTaskDelay(pdMS_TO_TICKS(10));        
-    }
+    xTaskCreate(task_system, "task_system", 4096, NULL, 1, NULL);
 }

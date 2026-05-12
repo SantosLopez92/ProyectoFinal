@@ -3,8 +3,10 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "driver/adc.h"
-#include "driver_ledc.h"
+#include "driver/ledc.h"
+#include "driver/i2c.h"
 #include "driver/gpio.h"
+#include "esp_log.h"
 #include "ssd1306.h"
 #include "font8x8_basic.h"
 
@@ -30,6 +32,12 @@
 
 // Configuracion para boton de prueba
 #define BTN1 GPIO_NUM_12
+
+// Configuracion para I2C Heartbeat
+#define HB_SDA      GPIO_NUM_18
+#define HB_SCL      GPIO_NUM_19
+#define I2C_HB      I2C_NUM_1
+#define ESP2_ADDR   0x08
 
 // Variables OLED
 int center=3;
@@ -74,7 +82,7 @@ void pwm_timer_config(void)
 }
 
 // Configurar canal PWM
-pwm_channel_config(void)
+void pwm_channel_config(void)
 {
     ledc_channel_config_t ledc_channel = {
         .channel    = SERVO_CHANNEL,
@@ -150,16 +158,77 @@ void leer_adc(void)
     vTaskDelay(pdMS_TO_TICKS(500));	
 }
 
+// I2C HEARTBEAT
+
+// Configurar I2C maestro
+void init_i2c_master(void)
+{
+    i2c_config_t conf = {
+        .mode = I2C_MODE_MASTER,
+        .sda_io_num = HB_SDA,
+        .scl_io_num = HB_SCL,
+        .sda_pullup_en = GPIO_PULLUP_ENABLE,
+        .scl_pullup_en = GPIO_PULLUP_ENABLE,
+        .master.clk_speed = 100000
+    };
+
+    i2c_param_config(I2C_HB, &conf);
+
+    i2c_driver_install(
+        I2C_HB,
+        conf.mode,
+        0,
+        0,
+        0
+    );
+}
+
+// Enviar heartbeat al ESP2
+void send_heartbeat(void)
+{
+    i2c_cmd_handle_t cmd =
+        i2c_cmd_link_create();
+
+    i2c_master_start(cmd);
+
+    i2c_master_write_byte(
+        cmd,
+        (ESP2_ADDR << 1) | I2C_MASTER_WRITE,
+        true
+    );
+
+    char msg[] = "HB";
+
+    i2c_master_write(cmd, (uint8_t*)msg, strlen(msg), true);
+
+    i2c_master_stop(cmd);
+
+    i2c_master_cmd_begin(I2C_HB, cmd, pdMS_TO_TICKS(100));
+
+    i2c_cmd_link_delete(cmd);
+}
+
+// Enviar heartbeat cada segundo
+void task_heartbeat(void *pv)
+{
+    while(1)
+    {
+        send_heartbeat();
+
+        vTaskDelay(pdMS_TO_TICKS(1000));
+    }
+}
 
 void app_main(void)
 {
+	// Configuracion PWM
     pwm_timer_config();
     pwm_channel_config();
 
     // Variable para flanco de bajada BTN1
     int last_state_adc = 1;
 
-    Posicion inicial del servo
+    // Posicion inicial del servo
     servo_move(0);
 
     // Configuracion OLED
@@ -170,6 +239,17 @@ void app_main(void)
     // Inicializacion de ADC y botón
     in_adc();
     in_btn();
+    
+    // Configuracion I2C heartbeat
+    init_i2c_master();
+
+    // Mensaje inicial
+    sprintf(lineChar, "ESP1 ACTIVO");
+
+    OLED();
+
+    // Task heartbeat
+    xTaskCreate(task_heartbeat,"task_heartbeat",4096,NULL,1,NULL);
 
     // Bucle de lectura
     while (1) {

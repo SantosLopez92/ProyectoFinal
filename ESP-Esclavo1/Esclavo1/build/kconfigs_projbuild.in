@@ -3,3 +3,4 @@ source "C:/Espressif/frameworks/esp-idf-v5.5.2/components/esp_app_format/Kconfig
 source "C:/Espressif/frameworks/esp-idf-v5.5.2/components/esp_rom/Kconfig.projbuild"
 source "C:/Espressif/frameworks/esp-idf-v5.5.2/components/esptool_py/Kconfig.projbuild"
 source "C:/Espressif/frameworks/esp-idf-v5.5.2/components/partition_table/Kconfig.projbuild"
+source "C:/Users/areli/practicas_micros_2026/ProyectoFinal/ESP-Esclavo1/Esclavo1/components/ssd1306/Kconfig.projbuild"
