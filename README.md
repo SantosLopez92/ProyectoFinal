@@ -155,7 +155,7 @@ La interfaz permite visualizar:
 ## 📸 Imágenes
 
 ### Diagrama general
-![Diagrama](imagenes/DiagramaGeneral.png)
+![Diagrama](imagenes/DiagramaGeneral.jpg)
 
 ### Banda transportadora
 ![Banda](imagenes/Banda.jpeg)
@@ -223,6 +223,29 @@ ProyectoFinal/
 - I2C
 - ADC
 - PWM
+
+---
+
+## 📚 Historial de commits
+
+- Se agrego la base del proyecto
+- Configuración de servomotor - Prueba con botón.c
+- Cambio de nombre de archivo a esp1.txt
+- Cambio de nombre de archivo a esp1.txt
+- Configuración de ADC y OLED.c
+- Modificación para el motor paso a paso
+- Secuencia de etapas y lecuta de los sensores
+- Funciones de soporte y inicio de la comunicacion wifi
+- Configuración de servomotor, ADC y OLED en Esclavo 2.c
+- Cambio de nombre de archivo a esp2.txt
+- Cambio de nombre de archivo a esp2.txt
+- Comunicación I2C entre esclavo principal y secundario
+- Agregado README.md
+- Add files via upload
+- Comunicación Wifi en esclavo principal.c
+- Comunicación Wifi en esclavo de respaldo.c
+- codigo final del cerebro
+- Acualizacion ReadMe
 
 ---
 
